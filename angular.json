@@ -123,5 +123,10 @@
       }
     }
   },
-  "defaultProject": "wine-cellar-front-end"
+  "defaultProject": "wine-cellar-front-end",
+  "schematics": {
+    "@schematics/angular:component": {
+      "styleext": "sass"
+    }
+  }
 }
