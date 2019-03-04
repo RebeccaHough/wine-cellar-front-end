@@ -26,7 +26,7 @@
               {
                 "input": "node_modules/@angular/material/prebuilt-themes/indigo-pink.css"
               },
-              "src/styles.css"
+              "src/styles.scss"
             ],
             "scripts": []
           },
@@ -132,7 +132,7 @@
   "defaultProject": "wine-cellar-front-end",
   "schematics": {
     "@schematics/angular:component": {
-      "styleext": "sass"
+      "styleext": "scss"
     }
   }
 }

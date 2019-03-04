@@ -5,14 +5,15 @@ import { HttpService } from './services/http.service';
 @Component({
   selector: 'app-root',
   templateUrl: './app.component.html',
-  styleUrls: ['./app.component.css']
+  styleUrls: ['./app.component.scss']
 })
 export class AppComponent {
-  title = 'wine-cellar-front-end';
 
   constructor(private http: HttpService) { }
 
   //TODO error handling for bad responses, to say request not received/processed
+
+  //TODO  https://valor-software.com/ng2-charts/
 
   /**
    * Get entire database
