@@ -1,0 +1,2 @@
+Path to Angular on ATLANTA
+C:\Users\rt016631\appdata\Roaming\npm\ng.cmd

@@ -1,3 +1,21 @@
+//page styling
 .wrapper {
-    margin: 20px;
+    &.page {
+        //push footer to bottom
+        min-height: 100vh; //wrapper extends the full viewport
+        display: flex;
+        flex-direction: column;
+    }
+    &.main {
+        //push footer to bottom
+        flex: 1; //take up all remaining space (from navbar) in viewport/page wrapper
+        display: flex;
+        flex-direction: column;
+    }
+    &.content {
+        //pad content
+        margin: 20px;
+        //push footer to bottom
+        flex: 1; //take up all remaining space (from footer) in main wrapper
+    }
 }

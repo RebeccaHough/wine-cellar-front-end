@@ -1,17 +1,19 @@
 import { Injectable } from '@angular/core';
 import { HttpClient, HttpHeaders, HttpErrorResponse } from '@angular/common/http';
 
-const httpOptions = {
-  headers: new HttpHeaders({ 'Content-Type': 'application/json' })
-};
 
 @Injectable({
   providedIn: 'root'
 })
 export class HttpService {
   private url:string = "localhost:1337"; //Express server's IP
+  private httpOptions = {
+    headers: new HttpHeaders({ 'Content-Type': 'application/json' })
+  };
 
   constructor(private http: HttpClient) { }
+
+  //TODO error handling for bad responses, to say request not received/processed
 
   //#region Endpoint-specific methods
   //direct request to appropriate endpoint name and handle request type etc., to take load off calling component

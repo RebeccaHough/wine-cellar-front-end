@@ -18,10 +18,11 @@ import { MaterialModule } from './material.module';
 import { HttpService } from './services/http.service';
 
 const routes: Routes = [
-  { path: '', redirectTo: 'view-data', pathMatch: 'full' },
   { path: 'view-data', component: ViewDataComponent },
   { path: 'settings', component: SettingsComponent },
-  { path: 'tests', component: TestsComponent }
+  { path: 'tests', component: TestsComponent },
+  { path: '', redirectTo: 'view-data', pathMatch: 'full' },
+  { path: '**', redirectTo: 'view-data', pathMatch: 'full' }
 ];
 
 @NgModule({
