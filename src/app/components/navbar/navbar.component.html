@@ -6,8 +6,8 @@
 </mat-toolbar>
 <mat-toolbar color="primary" class="secondary navbar">
   <nav>
-    <a href="/view-data" [ngClass]="isActive('/view-data')">View data</a>
-    <a href="/settings" [ngClass]="isActive('/settings')">Settings</a>
-    <a href="/tests" [ngClass]="isActive('/tests')">Test Functions</a>
+    <a [router-link]="['/view-data']" [ngClass]="isActive('/view-data')">View data</a>
+    <a [router-link]="['/settings']" [ngClass]="isActive('/settings')">Settings</a>
+    <a [router-link]="['/tests']" [ngClass]="isActive('/tests')">Test Functions</a>
   </nav>
 </mat-toolbar>
