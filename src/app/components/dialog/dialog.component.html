@@ -1,9 +1,59 @@
 <h2 mat-dialog-title>{{title}}</h2>
-<!--TODO forms?-->
-<mat-dialog-content>Are you sure?</mat-dialog-content>
-<mat-dialog-actions>
-  <button mat-button mat-dialog-close>No</button>
-  <!-- The mat-dialog-close directive optionally accepts a value as a result for the dialog. -->
-  <button mat-button [mat-dialog-close]="true">Yes</button>
-  <button mat-button closeDialog>Close dialog</button>
+
+<!--TODO forms?
+
+  <mat-dialog-content [formGroup]="form">
+  
+    <mat-form-field>
+        <input matInput
+                placeholder="Course Description"
+               formControlName="description">
+    </mat-form-field>
+
+-->
+<mat-dialog-content>
+
+  <!-- Alarms -->
+  <ng-container *ngIf="type == 'alarms'">
+    The complete list of alarms is shown here:
+    <ul>
+      <li *ngFor="let alarm of form">
+        <p>{{alarm.name}}, {{alarm.condtion}}, {{alarm.isSubscribedTo}}</p>
+        <!-- <var 1 dropdown>
+          time/temp/hum
+        </var 1 dropdown>
+        <operator dropdown>
+          < > <= >= == 
+        </operator dropdown>
+        <var 2 input box>
+          10
+        </var 2 input box> -->
+      </li>
+    </ul>
+    <button mat-button class="mat-raised-button mat-primary">New</button>
+    <button mat-button class="mat-raised-button mat-primary">Edit</button>
+    <button mat-button class="mat-raised-button mat-primary">Delete</button>
+  </ng-container>
+
+  <!-- Email -->
+  <ng-container *ngIf="type == 'email'">
+    <p>{{form.text}}</p>
+    <!-- TODO [formControl]-->
+    <!-- <mat-form-field>
+      <input matInput placeholder="Enter your email" [formControl]="email" required>
+      <mat-error *ngIf="email.invalid">{{getErrorMessage()}}</mat-error>
+    </mat-form-field> -->
+  </ng-container>
+
+  <!-- Report Generation -->
+  <ng-container *ngIf="type == 'report'"></ng-container>
+
+  <!-- Data Collection -->
+  <ng-container *ngIf="type == 'data'"></ng-container>
+
+</mat-dialog-content>
+
+<mat-dialog-actions align="end">
+  <button mat-button class="mat-raised-button mat-accent" (click)="save()">Save changes</button>
+  <button mat-button class="mat-raised-button mat-warn" (click)="close()">Discard changes</button>
 </mat-dialog-actions>

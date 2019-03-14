@@ -1,6 +1,15 @@
-<p>Configure alarms. Create new alarms, delete and edit values such as when to trigger.</p>
-<button mat-raised-button color="primary" (click)="setAlarms()">Alarm</button>
+<h2>Settings</h2>
+<mat-divider></mat-divider>
+<p>From this page, you can view and update various settings.</p>
+<br>
+<p>To change the email address associated with the system, click here.</p>
+<button mat-raised-button color="primary" (click)="setEmail()">Update email address</button>
 
-<p>Click to open dialog (TODO) to change settings such as the email address to send reports and alarms to, how often to generate reports... etc.</p>
-<button mat-raised-button color="primary" (click)="setPrefs()">Set Prefs</button>
-<!--TODO lauch dialog/other form showing all possible settings to change-->
+<p>To configure alarm settings click here. Create new alarms, delete alarms and edit values such as when the alarm should trigger.</p>
+<button mat-raised-button color="primary" (click)="setAlarms()">View and edit alarms</button>
+
+<p>To send configure report generation settings, such as how often to generate reports, click here.</p>
+<button mat-raised-button color="primary" (click)="setReportPrefs()">Update report settings</button>
+
+<p>To configure the data collection settings, such as how often poll the temperature/humidity sensor, click here.</p>
+<button mat-raised-button color="primary" (click)="setDataCollectionPrefs()">Update data collection settings</button>
