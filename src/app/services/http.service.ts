@@ -1,12 +1,15 @@
 import { Injectable } from '@angular/core';
 import { HttpClient, HttpHeaders, HttpErrorResponse } from '@angular/common/http';
+import { catchError, map } from 'rxjs/operators';
+import { Observable } from 'rxjs';
+import { UserSettings } from '../interfaces/user-settings.interface';
 
 
 @Injectable({
   providedIn: 'root'
 })
 export class HttpService {
-  private url:string = "localhost:1337"; //Express server's IP
+  private url:string = "http://localhost:1337"; //Express server's IP
   private jsonHttpOptions = {
     headers: new HttpHeaders({ 'Content-Type': 'application/json' })
   };
@@ -19,6 +22,7 @@ export class HttpService {
    * Send GET to 'database' endpoint to request a entire database from back-end
    */
   public getDatabase() {
+    console.log("Sending GET request to endpoint '/database'.");
     return this.get('database');
   }
 
@@ -26,15 +30,20 @@ export class HttpService {
    * Send GET to user-settings endpoint
    */
   public getUserSettings() {
-    return this.get('user-settings');
+    console.log("Sending GET request to endpoint '/user-settings'.");
+    return this.get('user-settings')
+      .pipe(
+        map((res: UserSettings) => {return res})
+      );
   }
 
   /**
-   * POST body to 'user' endpoint to update user preferences
+   * PUT body to 'user' endpoint to update user preferences
    * @param body 
    */
   public updateUserSettings(body: any) {
     body = JSON.stringify(body);
+    console.log("Sending PUT request to endpoint '/user-settings'.");
     return this.put(body, 'user-settings');
   }
 
@@ -42,6 +51,7 @@ export class HttpService {
    * Send GET to 'email-me' endpoint to request a test email from back-end 
    */
   public sendTestEmail() {
+    console.log("Sending GET request to endpoint '/email-me'.");
     return this.get('email-me');
   }
 
@@ -50,6 +60,7 @@ export class HttpService {
    * the email address saved in settings
    */
   public sendReport() {
+    console.log("Sending GET request to endpoint '/send-report'.");
     return this.get('send-report');
   }
 
@@ -66,15 +77,10 @@ export class HttpService {
   private get(endpoint: string, httpOptions?: any) {
     if(!httpOptions) httpOptions = {}
 
-    return this.http.get(`${this.url}/${endpoint}`, httpOptions).subscribe(
-      (response: any) => {
-        console.log("Got: ", response);
-        return; //TODO
-      },
-      (err: HttpErrorResponse) => {
-        this.handle(err);
-      }
-    )
+    return this.http.get(`${this.url}/${endpoint}`, httpOptions)
+      .pipe(
+        catchError(this.handleError)
+      );
   }
 
   /**
@@ -88,15 +94,10 @@ export class HttpService {
     if(!httpOptions) httpOptions = {}
     body = JSON.stringify(body);
 
-    return this.http.put(`${this.url}/${endpoint}`, body, httpOptions).subscribe(
-      (response: any) => {
-        console.log("Got: ", response);
-        return; //TODO
-      },
-      (err: HttpErrorResponse) => {
-        this.handle(err);
-      }
-    )
+    return this.http.put(`${this.url}/${endpoint}`, body, httpOptions)
+      .pipe(
+        catchError(this.handleError)
+      );
   }
 
   /**
@@ -110,24 +111,19 @@ export class HttpService {
     if(!httpOptions) httpOptions = {}
     body = JSON.stringify(body);
 
-    return this.http.post(`${this.url}/${endpoint}`, body, httpOptions).subscribe(
-      (response: any) => {
-        console.log("Got: ", response);
-        return; //TODO
-      },
-      (err: HttpErrorResponse) => {
-        this.handle(err);
-      }
-    )
+    return this.http.post(`${this.url}/${endpoint}`, body, httpOptions)
+      .pipe(
+        catchError(this.handleError)
+      );
   }
 
   /**
    * Handle HTTP errors
    * @param err 
    */
-  private handle(err: HttpErrorResponse) {
+  private handleError(err: HttpErrorResponse) {
     console.error(err);
-    //TODO return error to caller
+    return Observable.throw(err);
   }
 
   //#endregion

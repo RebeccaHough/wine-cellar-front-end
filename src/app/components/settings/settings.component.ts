@@ -3,6 +3,8 @@ import { FormControl, FormGroup, FormBuilder, FormArray } from '@angular/forms';
 import { HttpService } from '../../services/http.service';
 import { DialogComponent } from '../dialog/dialog.component';
 import { MatDialog } from '@angular/material/dialog';
+import { ServerResponse } from 'src/app/interfaces/server-response.interface';
+import { Alarm } from 'src/app/interfaces/settings-interfaces/alarm.interface';
 
 @Component({
   selector: 'app-settings',
@@ -13,22 +15,50 @@ export class SettingsComponent {
 
   constructor(private fb: FormBuilder, private http: HttpService, private dialog: MatDialog) { }
 
-  public setEmail() {
-    //TODO get email
-    // email = this.http.getSettings()
+  //TODO maybe store settings so dont need to get them each time
+  //getSettings.
+  //then()
+  //function getSettings()
+  //if(settings) Promise.resolve(settings)
+  //else this.http.getUserSettings()
 
-    let dialogRef = this.dialog.open(DialogComponent, {
-      data: { 
-        title: "Email address",
-        type: "email",
-        form: {
-          text: "The email address currently used to send alarms and reports to is shown below. To use a different email address, edit the address below and hit 'Save changes'.",
-          email: "todo@todo.com"
-        } 
-      }
-    });
+  /**
+   * Initialise and manage email dialog
+   */
+  public setEmail() {
+    //get email address
+    this.http.getUserSettings().subscribe((settings: ServerResponse) => {
+      console.log(settings);
+      let email = settings.data.userEmailAddress;
+
+      //TODO use angular forms
+  
+      let dialogRef = this.dialog.open(DialogComponent, {
+        data: { 
+          title: "Email address",
+          type: "email",
+          form: {
+            text: "The email address currently used to send alarms and reports to is shown below. To use a different email address, edit the address below and hit 'Save changes'.",
+            email: email
+          } 
+        }
+      });
+
+      //if email address was changed, update it
+      dialogRef.afterClosed().subscribe((email: string) => {
+        if(email) {
+          //TODO append alarms to settings
+          console.log("TODO");
+          // this.http.updateUserPrefs(prefs);
+          //subscribe and inform user if update was succesful
+        }
+      });
+    })
   }
 
+  /**
+   * Initialise and manage alarms dialog
+   */
   public setAlarms() {
     //send all alarms to dialog
     //store settings in variable for later use in afterClosed()
@@ -68,7 +98,7 @@ export class SettingsComponent {
       }
     });
 
-    dialogRef.afterClosed().subscribe((alarms: any) => {
+    dialogRef.afterClosed().subscribe((alarms: Alarm[]) => {
       if(alarms) {
         //TODO append alarms to settings
         console.log("TODO");
@@ -77,6 +107,9 @@ export class SettingsComponent {
     });
   }
 
+  /**
+   * Initialise and manage reports dialog
+   */
   public setReportPrefs() {
     let dialogRef = this.dialog.open(DialogComponent, {
       data: { 
@@ -87,6 +120,9 @@ export class SettingsComponent {
     });
   }
 
+  /**
+   * Initialise and manage data collection settings dialog
+   */
   public setDataCollectionPrefs() {
     let dialogRef = this.dialog.open(DialogComponent, {
       data: { 
