@@ -13,8 +13,8 @@ export class ViewDataComponent {
   /**
    * Get entire database
    */
-  public getDb() {
-    this.http.getDb();
+  public getDatabase() {
+    this.http.getDatabase();
   }
 
 }
