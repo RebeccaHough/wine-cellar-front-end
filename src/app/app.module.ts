@@ -11,7 +11,6 @@ import { MaterialModule } from './material.module';
 import { ChartsModule } from 'ng2-charts';
 
 import { AppComponent } from './app.component';
-import { ButtonComponent } from './components/button/button.component';
 import { NavbarComponent } from './components/navbar/navbar.component';
 import { DialogComponent } from './components/dialog/dialog.component';
 import { ViewDataComponent } from './components/view-data/view-data.component';
@@ -34,7 +33,6 @@ const routes: Routes = [
 @NgModule({
   declarations: [
     AppComponent,
-    ButtonComponent,
     NavbarComponent,
     DialogComponent,
     ViewDataComponent,

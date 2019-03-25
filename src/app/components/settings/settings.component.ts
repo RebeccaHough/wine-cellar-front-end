@@ -1,10 +1,11 @@
 import { Component } from '@angular/core';
-import { FormControl, FormGroup, FormBuilder, FormArray } from '@angular/forms';
+import { FormControl, FormGroup, FormBuilder, FormArray, Validators } from '@angular/forms';
 import { HttpService } from '../../services/http.service';
 import { DialogComponent } from '../dialog/dialog.component';
 import { MatDialog } from '@angular/material/dialog';
-import { ServerResponse } from 'src/app/interfaces/server-response.interface';
+import { SettingsServerResponse } from 'src/app/interfaces/settings-server-response.interface';
 import { Alarm } from 'src/app/interfaces/settings-interfaces/alarm.interface';
+import { UserSettings } from 'src/app/interfaces/settings-interfaces/user-settings.interface';
 
 @Component({
   selector: 'app-settings',
@@ -12,6 +13,7 @@ import { Alarm } from 'src/app/interfaces/settings-interfaces/alarm.interface';
   styleUrls: ['./settings.component.scss']
 })
 export class SettingsComponent {
+  public settings: UserSettings;
 
   constructor(private fb: FormBuilder, private http: HttpService, private dialog: MatDialog) { }
 
@@ -22,44 +24,91 @@ export class SettingsComponent {
   //if(settings) Promise.resolve(settings)
   //else this.http.getUserSettings()
 
+  //TODO test/use this
+  /**
+   * Helper function to return settings from memory or fetch them from back-end
+   */
+  public getSettings(): Promise<UserSettings> {
+    if(this.settings)
+      return Promise.resolve(this.settings);
+    else {
+      return new Promise(function() {
+        this.http.getUserSettings()
+        .subscribe(
+          (res: SettingsServerResponse) => {
+            console.log(res.message)
+            if(res.data) {
+              this.settings = res.data;
+              Promise.resolve(this.settings);
+            } else {
+              Promise.reject(res.message);
+            }
+          },
+          err => {
+            Promise.reject(err);
+          }
+        );
+      });
+    }
+  }
+
   /**
    * Initialise and manage email dialog
    */
-  public setEmail() {
+  public openEmailDialog() {
     //get email address
-    this.http.getUserSettings().subscribe((settings: ServerResponse) => {
-      console.log(settings);
-      let email = settings.data.userEmailAddress;
+    this.http.getUserSettings()
+    .subscribe(
+      (res: SettingsServerResponse) => {
+        let email = "Not found";
+        if(res && res.data && res.data.userEmailAddress)
+          email = res.data.userEmailAddress;
 
-      //TODO use angular forms
-  
-      let dialogRef = this.dialog.open(DialogComponent, {
-        data: { 
-          title: "Email address",
-          type: "email",
-          form: {
-            text: "The email address currently used to send alarms and reports to is shown below. To use a different email address, edit the address below and hit 'Save changes'.",
-            email: email
-          } 
-        }
-      });
+        //build reactive form
+        let form = this.fb.group({
+          emailDescription: `The email address currently used to send alarms and reports to is shown below.
+          To use a different email address, edit the address below and hit 'Save changes'.`,
+          email: [email, [
+            Validators.required,
+            Validators.email
+          ]]
+        });
+    
+        let dialogRef = this.dialog.open(DialogComponent, {
+          data: { 
+            title: "Email address",
+            type: "email",
+            form: form
+          }
+        });
 
-      //if email address was changed, update it
-      dialogRef.afterClosed().subscribe((email: string) => {
-        if(email) {
-          //TODO append alarms to settings
-          console.log("TODO");
-          // this.http.updateUserPrefs(prefs);
-          //subscribe and inform user if update was succesful
+        //if email address was changed, update it
+        dialogRef.afterClosed().subscribe((form: FormGroup) => {
+          console.log(form);
+          if(form && form.value && form.value.email) {
+            //update email address to settings
+            let settings = res.data
+            settings.userEmailAddress = form.value.email;
+
+            //send settings to back-end subscribe and inform user if update was succesful
+            this.http.updateUserSettings(settings)
+            .subscribe(res => {
+              console.log("Succesfully updated settings. TODO inform user (rewrite message service).");
+            });
+            //TODO .catch((err) => {this.errorMessageService.setMessage(err)});
+          }
+        },
+        (err) => {
+          console.log("TODO an error occured.", err);
         }
-      });
+      );
     });
   }
 
   /**
    * Initialise and manage alarms dialog
    */
-  public setAlarms() {
+  public openAlarmsDialog() {
     //send all alarms to dialog
     //store settings in variable for later use in afterClosed()
     //TODO get alarms = getAlarms() with error handling
@@ -110,7 +159,7 @@ export class SettingsComponent {
   /**
    * Initialise and manage reports dialog
    */
-  public setReportPrefs() {
+  public openReportDialog() {
     let dialogRef = this.dialog.open(DialogComponent, {
       data: { 
         title: "Report Generation",
@@ -123,7 +172,7 @@ export class SettingsComponent {
   /**
    * Initialise and manage data collection settings dialog
    */
-  public setDataCollectionPrefs() {
+  public openDataCollectionDialog() {
     let dialogRef = this.dialog.open(DialogComponent, {
       data: { 
         title: "Data Collection",

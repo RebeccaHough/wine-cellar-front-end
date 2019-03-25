@@ -11,7 +11,7 @@ import { MAT_DIALOG_DATA } from '@angular/material';
 export class DialogComponent {
   public title: string;
   public type: string;
-  public form: any; //TODO FormGroup or FormArray;
+  public form: FormGroup;
 
   constructor(public dialogRef: MatDialogRef<DialogComponent>, @Inject(MAT_DIALOG_DATA) public data: any) { 
     this.title = data.title;

@@ -3,13 +3,13 @@
 <p>From this page, you can view and update various settings.</p>
 <br>
 <p>To change the email address associated with the system, click here.</p>
-<button mat-raised-button color="primary" (click)="setEmail()">Update email address</button>
+<button mat-raised-button color="primary" (click)="openEmailDialog()">Update email address</button>
 
 <p>To configure alarm settings click here. Create new alarms, delete alarms and edit values such as when the alarm should trigger.</p>
-<button mat-raised-button color="primary" (click)="setAlarms()">View and edit alarms</button>
+<button mat-raised-button color="primary" (click)="openAlarmsDialog()">View and edit alarms</button>
 
 <p>To send configure report generation settings, such as how often to generate reports, click here.</p>
-<button mat-raised-button color="primary" (click)="setReportPrefs()">Update report settings</button>
+<button mat-raised-button color="primary" (click)="openReportDialog()">Update report settings</button>
 
 <p>To configure the data collection settings, such as how often poll the temperature/humidity sensor, click here.</p>
-<button mat-raised-button color="primary" (click)="setDataCollectionPrefs()">Update data collection settings</button>
+<button mat-raised-button color="primary" (click)="openDataCollectionDialog()">Update data collection settings</button>
