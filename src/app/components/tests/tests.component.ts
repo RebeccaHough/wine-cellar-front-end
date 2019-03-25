@@ -11,10 +11,10 @@ export class TestsComponent {
   constructor(private http: HttpService) { }
 
   /**
-   * Force back-end to generate a report now and send it to the email address saved
+   * Force back-end to generate a report and send it to the email address saved
    */
-  public generateReportNow() {
-    this.http.generateReportNow();
+  public sendReport() {
+    this.http.sendReport();
   }
 
   /**

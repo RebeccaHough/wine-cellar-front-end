@@ -53,7 +53,7 @@ export class SettingsComponent {
           //subscribe and inform user if update was succesful
         }
       });
-    })
+    });
   }
 
   /**
@@ -81,7 +81,7 @@ export class SettingsComponent {
     for(let alarm of alarms) {
       let alarmsForm: FormGroup;
       for(let prop in alarm) {
-        alarmsForm.addControl(prop, new FormControl(alarm[prop]);
+        alarmsForm.addControl(prop, new FormControl(alarm[prop]));
       }
       alarmsForms.push(alarmsForm);
     }

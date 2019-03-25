@@ -8,6 +8,8 @@ import { BrowserAnimationsModule } from '@angular/platform-browser/animations';
 import { MatDialogModule } from '@angular/material';
 import { MaterialModule } from './material.module';
 
+import { ChartsModule } from 'ng2-charts';
+
 import { AppComponent } from './app.component';
 import { ButtonComponent } from './components/button/button.component';
 import { NavbarComponent } from './components/navbar/navbar.component';
@@ -16,8 +18,10 @@ import { ViewDataComponent } from './components/view-data/view-data.component';
 import { SettingsComponent } from './components/settings/settings.component';
 import { TestsComponent } from './components/tests/tests.component';
 import { FooterComponent } from './components/footer/footer.component';
+import { ErrorMessageComponent } from './components/error-message/error-message.component';
 
 import { HttpService } from './services/http.service';
+import { ErrorMessageService } from './services/error-message.service';
 
 const routes: Routes = [
   { path: 'view-data', component: ViewDataComponent },
@@ -36,7 +40,8 @@ const routes: Routes = [
     ViewDataComponent,
     SettingsComponent,
     TestsComponent,
-    FooterComponent
+    FooterComponent,
+    ErrorMessageComponent
   ],
   entryComponents: [
     DialogComponent
@@ -48,10 +53,12 @@ const routes: Routes = [
     ReactiveFormsModule,
     BrowserAnimationsModule,
     MatDialogModule,
-    MaterialModule
+    MaterialModule,
+    ChartsModule
   ],
   providers: [
-    HttpService
+    HttpService,
+    ErrorMessageService
   ],
   bootstrap: [AppComponent]
 })

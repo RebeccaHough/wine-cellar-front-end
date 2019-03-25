@@ -3,9 +3,26 @@ import { MatButtonModule, MatCheckboxModule, MatToolbarModule } from '@angular/m
 import { MatDialogModule } from '@angular/material/dialog';
 import { MatDividerModule } from '@angular/material/divider';
 import { MatFormFieldModule } from '@angular/material/form-field';
+import { MatCardModule } from '@angular/material/card';
 
 @NgModule({
-  imports: [MatButtonModule, MatCheckboxModule, MatToolbarModule, MatDialogModule, MatDividerModule, MatFormFieldModule],
-  exports: [MatButtonModule, MatCheckboxModule, MatToolbarModule, MatDialogModule, MatDividerModule, MatFormFieldModule],
+  imports: [
+    MatButtonModule, 
+    MatCheckboxModule,
+     MatToolbarModule, 
+     MatDialogModule, 
+     MatDividerModule, 
+     MatFormFieldModule,
+     MatCardModule
+  ],
+  exports: [
+    MatButtonModule, 
+    MatCheckboxModule, 
+    MatToolbarModule, 
+    MatDialogModule, 
+    MatDividerModule, 
+    MatFormFieldModule,
+    MatCardModule
+  ]
 })
 export class MaterialModule { }

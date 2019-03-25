@@ -2,7 +2,7 @@ import { Injectable } from '@angular/core';
 import { HttpClient, HttpHeaders, HttpErrorResponse } from '@angular/common/http';
 import { catchError, map } from 'rxjs/operators';
 import { Observable } from 'rxjs';
-import { UserSettings } from '../interfaces/user-settings.interface';
+import { UserSettings } from '../interfaces/settings-interfaces/user-settings.interface';
 
 
 @Injectable({

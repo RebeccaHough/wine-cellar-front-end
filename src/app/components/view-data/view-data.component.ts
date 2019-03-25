@@ -1,5 +1,6 @@
 import { Component } from '@angular/core';
 import { HttpService } from '../../services/http.service';
+import { ErrorMessageService } from '../../services/error-message.service';
 
 @Component({
   selector: 'app-view-data',
@@ -8,13 +9,14 @@ import { HttpService } from '../../services/http.service';
 })
 export class ViewDataComponent {
 
-  constructor(private http: HttpService) { }
+  constructor(private http: HttpService, private errorMessageService: ErrorMessageService) { }
     
   /**
    * Get entire database
    */
   public getDatabase() {
-    this.http.getDatabase();
+    this.http.getDatabase()
+    .subscribe(data => {});
+    //TODO .catch(err => {this.errorMessageService.setMessage(err.err.message)});
   }
-
 }

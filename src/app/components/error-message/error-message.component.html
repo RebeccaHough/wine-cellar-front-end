@@ -1,0 +1,7 @@
+<mat-card *ngIf="errmsg" >
+  <mat-card-title>An error occured</mat-card-title>
+  <mat-card-content>{{errmsg}}</mat-card-content>
+  <mat-card-actions>
+    <button mat-button color="warn" (click)="close()">Close</button>
+  </mat-card-actions>
+</mat-card>
