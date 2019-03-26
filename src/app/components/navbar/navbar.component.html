@@ -1,15 +1,13 @@
 <mat-toolbar color="primary" class="main navbar">
   <nav>
-    <a href="#">
-      <img src="../../../assets/glass.png" alt="wine glass">
-      Wine Cellar Front End Portal
-    </a>
+    <a href="#"> Wine Cellar Front-End Portal</a>
+    <img src="../../../assets/winebottle.png" alt="Wine glass image" class="icon">
   </nav>
 </mat-toolbar>
 <mat-toolbar color="primary" class="secondary navbar">
   <nav>
     <a routerLink="/view-data" [ngClass]="isActive('/view-data')">View data</a>
     <a routerLink="/settings" [ngClass]="isActive('/settings')">Settings</a>
-    <a routerLink="/tests" [ngClass]="isActive('/tests')">Test Functions</a>
+    <a routerLink="/tests" [ngClass]="isActive('/tests')">Test functions</a>
   </nav>
 </mat-toolbar>

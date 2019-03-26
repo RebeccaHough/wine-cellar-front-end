@@ -2,7 +2,7 @@ import { Injectable } from '@angular/core';
 import { HttpClient, HttpHeaders, HttpErrorResponse } from '@angular/common/http';
 import { catchError, map } from 'rxjs/operators';
 import { Observable } from 'rxjs';
-import { UserSettings } from '../interfaces/settings-interfaces/user-settings.interface';
+import { SettingsServerResponse } from '../interfaces/settings-server-response.interface';
 
 
 @Injectable({
@@ -33,7 +33,7 @@ export class HttpService {
     console.log("Sending GET request to endpoint '/user-settings'.");
     return this.get('user-settings')
       .pipe(
-        map((res: UserSettings) => {return res})
+        map((res: SettingsServerResponse) => {return res})
       );
   }
 

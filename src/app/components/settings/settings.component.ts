@@ -66,8 +66,6 @@ export class SettingsComponent {
 
         //build reactive form
         let form = this.fb.group({
-          emailDescription: `The email address currently used to send alarms and reports to is shown below.
-          To use a different email address, edit the address below and hit 'Save changes'.`,
           email: [email, [
             Validators.required,
             Validators.email
@@ -76,8 +74,12 @@ export class SettingsComponent {
     
         let dialogRef = this.dialog.open(DialogComponent, {
           data: { 
-            title: "Email address",
             type: "email",
+            title: "Email address",
+            description: `
+              <div> The email address currently used to send alarms and reports to is shown below. </div>
+              <p> To use a different email address, edit the address below and hit 'Save changes'. </p>
+            `,
             form: form
           }
         });
@@ -95,11 +97,12 @@ export class SettingsComponent {
             .subscribe(res => {
               console.log("Succesfully updated settings. TODO inform user (rewrite message service).");
             });
-            //TODO .catch((err) => {this.errorMessageService.setMessage(err)});
+            //TODO .catch((err) => {this.errorMessageService.setMessage(err.error.message)});
           }
         },
         (err) => {
           console.log("TODO an error occured.", err);
+          //this.errorMessageService.setMessage(err.error.message);
         }
       );
     });

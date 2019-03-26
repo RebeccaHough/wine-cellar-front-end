@@ -9,25 +9,26 @@ import { MAT_DIALOG_DATA } from '@angular/material';
   styleUrls: ['./dialog.component.scss']
 })
 export class DialogComponent {
-  public title: string;
   public type: string;
+  public title: string;
+  public description: string;
   public form: FormGroup;
 
   constructor(public dialogRef: MatDialogRef<DialogComponent>, @Inject(MAT_DIALOG_DATA) public data: any) { 
-    this.title = data.title;
     this.type = data.type;
+    this.title = data.title;
+    this.description = data.description;
     this.form = data.form;
   }
 
   save() {
-    console.log("TODO save changes in dialog.");
-    this.dialogRef.close('TODO save changes in dialog.')
+    console.log("Saving changes made in dialog.");
     //emit form
-    // this.dialogRef.close(this.form.value);
+    this.dialogRef.close(this.form);
   }
 
   close() {
-    console.log("Closed dialog.");
-    this.dialogRef.close('Closed dialog.');
+    console.log("Closing dialog without saving.");
+    this.dialogRef.close();
   }
 }

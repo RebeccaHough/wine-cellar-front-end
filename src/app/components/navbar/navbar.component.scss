@@ -9,10 +9,27 @@
     flex: 1 1 auto;
     align-items: center;
     &.main {
+        height: 80px;
         @include shadow;
         //put this nav on top of secondary navbar in order to display shadow
         position: relative;
         z-index: 10;
+        a:hover {
+            color:white
+        }
+        nav {
+            width: 100%;
+            //flexbox to push items to left and right of nav
+            display: flex;
+            justify-content: space-between;
+            &> a, &> img {
+                font-size: 20px;
+                align-self: center;
+            }
+            img.icon {
+                height: 65px;
+            }
+        }
     }
     &.secondary {
         @include shadow;
@@ -36,7 +53,5 @@
             }
         }
     }
-    img {
-        height: 30px;
-    }
+    
 }
