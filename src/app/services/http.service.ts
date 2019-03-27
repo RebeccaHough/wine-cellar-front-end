@@ -1,8 +1,10 @@
 import { Injectable } from '@angular/core';
 import { HttpClient, HttpHeaders, HttpErrorResponse } from '@angular/common/http';
-import { catchError, map } from 'rxjs/operators';
 import { Observable } from 'rxjs';
+import { catchError, map } from 'rxjs/operators';
+
 import { SettingsServerResponse } from '../interfaces/settings-server-response.interface';
+import { ServerResponse } from '../interfaces/server-response.interface';
 
 
 @Injectable({
@@ -44,7 +46,9 @@ export class HttpService {
   public updateUserSettings(body: any) {
     body = JSON.stringify(body);
     console.log("Sending PUT request to endpoint '/user-settings'.");
-    return this.put(body, 'user-settings');
+    return this.put(body, 'user-settings').pipe(
+      map((res: ServerResponse) => {return res})
+    );
   }
 
   /**

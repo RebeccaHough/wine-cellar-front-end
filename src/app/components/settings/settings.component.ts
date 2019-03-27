@@ -7,6 +7,10 @@ import { SettingsServerResponse } from 'src/app/interfaces/settings-server-respo
 import { Alarm } from 'src/app/interfaces/settings-interfaces/alarm.interface';
 import { UserSettings } from 'src/app/interfaces/settings-interfaces/user-settings.interface';
 
+import { ErrorMessageService } from 'src/app/services/error-message.service';
+import { ServerResponse } from '../../interfaces/server-response.interface';
+import { HttpErrorResponse } from '@angular/common/http';
+
 @Component({
   selector: 'app-settings',
   templateUrl: './settings.component.html',
@@ -15,7 +19,10 @@ import { UserSettings } from 'src/app/interfaces/settings-interfaces/user-settin
 export class SettingsComponent {
   public settings: UserSettings;
 
-  constructor(private fb: FormBuilder, private http: HttpService, private dialog: MatDialog) { }
+  constructor(private fb: FormBuilder, 
+              private http: HttpService, 
+              private dialog: MatDialog,
+              private errorMessageService: ErrorMessageService) { }
 
   //TODO maybe store settings so dont need to get them each time
   //getSettings.
@@ -28,24 +35,24 @@ export class SettingsComponent {
   /**
    * Helper function to return settings from memory or fetch them from back-end
    */
-  public getSettings(): Promise<UserSettings> {
+  private getSettings(): Promise<UserSettings> {
     if(this.settings)
       return Promise.resolve(this.settings);
     else {
-      return new Promise(function() {
+      return new Promise((resolve, reject) => {
         this.http.getUserSettings()
         .subscribe(
           (res: SettingsServerResponse) => {
-            console.log(res.message)
+            console.log(res)
             if(res.data) {
               this.settings = res.data;
-              Promise.resolve(this.settings);
+              resolve(this.settings);
             } else {
-              Promise.reject(res.message);
+              reject(res.message);
             }
           },
           err => {
-            Promise.reject(err);
+            reject(err);
           }
         );
       });
@@ -56,55 +63,74 @@ export class SettingsComponent {
    * Initialise and manage email dialog
    */
   public openEmailDialog() {
-    //get email address
-    this.http.getUserSettings()
-    .subscribe(
-      (res: SettingsServerResponse) => {
-        let email = "Not found";
-        if(res && res.data && res.data.userEmailAddress)
-          email = res.data.userEmailAddress;
+    this.getSettings().then((settings: UserSettings) => {
+      let email = "";
+      //get email address
+      if(settings.userEmailAddress)
+        email = settings.userEmailAddress;
 
-        //build reactive form
-        let form = this.fb.group({
-          email: [email, [
-            Validators.required,
-            Validators.email
-          ]]
-        });
-    
-        let dialogRef = this.dialog.open(DialogComponent, {
-          data: { 
-            type: "email",
-            title: "Email address",
-            description: `
-              <div> The email address currently used to send alarms and reports to is shown below. </div>
-              <p> To use a different email address, edit the address below and hit 'Save changes'. </p>
-            `,
-            form: form
-          }
-        });
-
-        //if email address was changed, update it
-        dialogRef.afterClosed().subscribe((form: FormGroup) => {
-          console.log(form);
-          if(form && form.value && form.value.email) {
-            //update email address to settings
-            let settings = res.data
-            settings.userEmailAddress = form.value.email;
-
-            //send settings to back-end subscribe and inform user if update was succesful
-            this.http.updateUserSettings(settings)
-            .subscribe(res => {
-              console.log("Succesfully updated settings. TODO inform user (rewrite message service).");
-            });
-            //TODO .catch((err) => {this.errorMessageService.setMessage(err.error.message)});
-          }
-        },
-        (err) => {
-          console.log("TODO an error occured.", err);
-          //this.errorMessageService.setMessage(err.error.message);
+      //build reactive form
+      let form = this.fb.group({
+        email: [email, [
+          Validators.required,
+          Validators.email
+        ]]
+      });
+  
+      //open dialog, with type, title, description and form
+      let dialogRef = this.dialog.open(DialogComponent, {
+        data: { 
+          type: "email",
+          title: "Email address",
+          description: `
+            <div> The email address currently used to send alarms and reports to is shown below. </div>
+            <p> To use a different email address, edit the address below and hit 'Save changes'. </p>
+          `,
+          form: form
         }
-      );
+      });
+
+      //if email address was changed, update it
+      dialogRef.afterClosed().subscribe((form: FormGroup) => {
+        console.log("Received form", form);
+        if(form && form.value && form.value.email) {
+          console.log("Dialog closed with changes to save. Attempting save...");
+          //store new settings in a variable, in case send fails
+          let newSettings = settings;
+          newSettings.userEmailAddress = form.value.email;
+
+          //send settings to back-end subscribe and inform user if update was succesful
+          this.http.updateUserSettings(settings)
+          .subscribe((res: ServerResponse) => {
+            console.log(res.message);
+            console.log("Succesfully updated settings. TODO inform user (rewrite message service).");
+            //update this.settings
+            this.settings = newSettings;
+          },
+          (err: HttpErrorResponse) => {
+            //catch failure to update settings on back-end
+            console.error(err);
+            console.log("Failed to update settings.");
+            //safe access chain to find error message to show
+            this.errorMessageService.setMessage("Failed to update email address.\n" + (
+              (err && err.error && err.error.message) ? err.error.message : (
+                err.message ? err.message :  err.error
+              )
+            ));
+          });
+        } else {
+          console.log("Dialog closed with no changes to save.");
+        }
+      }); //don't catch errors that occur when closing dialog 
+    }).catch((err) => {
+      //catch failure to get settings
+      console.error(err);
+      //safe access chain to find error message to show
+      this.errorMessageService.setMessage("Failed to get user settings from back-end.\n" + (
+        (err && err.error && err.error.message) ? err.error.message : (
+          err.message ? err.message :  err.error
+        )
+      ));
     });
   }
 

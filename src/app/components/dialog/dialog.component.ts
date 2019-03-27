@@ -21,6 +21,8 @@ export class DialogComponent {
     this.form = data.form;
   }
 
+  //TODO don't call save when clicking outside box or disable clicking outside box to close
+
   save() {
     console.log("Saving changes made in dialog.");
     //emit form
