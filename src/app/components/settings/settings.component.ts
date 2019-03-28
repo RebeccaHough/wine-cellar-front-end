@@ -10,6 +10,7 @@ import { UserSettings } from 'src/app/interfaces/settings-interfaces/user-settin
 import { MessageService } from 'src/app/services/message.service';
 import { ServerResponse } from '../../interfaces/server-response.interface';
 import { HttpErrorResponse } from '@angular/common/http';
+import { Message } from 'src/app/interfaces/message.interface';
 
 @Component({
   selector: 'app-settings',
@@ -34,13 +35,13 @@ export class SettingsComponent {
       return new Promise((resolve, reject) => {
         this.http.getUserSettings()
         .subscribe(
-          (res: SettingsServerResponse) => {
-            console.log(res)
-            if(res.data) {
+          res => {
+            console.log("Got", res)
+            if(res.data) { //type = SettingsServerResponse
               this.settings = res.data;
-              resolve(this.settings);
-            } else {
-              reject(res.message);
+              resolve(this.settings); //type = UserSettings
+            } else { //type = Message
+              reject(res);
             }
           },
           err => {
@@ -93,36 +94,29 @@ export class SettingsComponent {
 
           //send settings to back-end subscribe and inform user if update was succesful
           this.http.updateUserSettings(settings)
-          .subscribe((res: ServerResponse) => {
-            console.log(res.message);
-            console.log("Succesfully updated settings. TODO inform user (rewrite message service).");
+          .subscribe((res: Message) => {
+            console.log("Succesfully updated settings.");
+            res.message = "Succesfully updated settings.\n" + res.message;
+            this.messageService.setMessage(res);
             //update this.settings
             this.settings = newSettings;
           },
-          (err: HttpErrorResponse) => {
+          (err: Message) => {
             //catch failure to update settings on back-end
-            console.error(err);
-            console.log("Failed to update settings.");
-            this.messageService.setMessage({
-              type: "error",
-              message: "Failed to update email address.\n" + (
-                (err && err.error && err.error.message) ? err.error.message : (err.message ? err.message :  err.error)
-              )
-            });
+            console.log("Failed to update user settings.");
+            //add user-friendly explanation
+            err.message = "Failed to update email address.\n" + err.message;
+            this.messageService.setMessage(err);
           });
         } else {
           console.log("Dialog closed with no changes to save.");
         }
       }); //don't catch errors that occur when closing dialog 
-    }).catch((err) => {
+    }).catch((err: Message) => {
       //catch failure to get settings
-      console.error(err);
-      this.messageService.setMessage({
-        type: "error",
-        message: "Failed to get user settings from back-end.\n" + (
-          (err && err.error && err.error.message) ? err.error.message : (err.message ? err.message : err.error)
-        )
-      });
+      console.log("Failed to get user settings.");
+      err.message = "Failed to get user settings from back-end.\n" + err.message;
+      this.messageService.setMessage(err);
     });
   }
 

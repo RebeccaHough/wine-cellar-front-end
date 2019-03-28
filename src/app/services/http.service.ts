@@ -1,10 +1,11 @@
 import { Injectable } from '@angular/core';
 import { HttpClient, HttpHeaders, HttpErrorResponse } from '@angular/common/http';
-import { Observable } from 'rxjs';
+import { Observable, of } from 'rxjs';
 import { catchError, map } from 'rxjs/operators';
 
 import { SettingsServerResponse } from '../interfaces/settings-server-response.interface';
 import { ServerResponse } from '../interfaces/server-response.interface';
+import { Message } from '../interfaces/message.interface';
 
 
 @Injectable({
@@ -23,49 +24,76 @@ export class HttpService {
   /**
    * Send GET to 'database' endpoint to request a entire database from back-end
    */
-  public getDatabase() {
+  public getDatabase(): Observable<any> {
     console.log("Sending GET request to endpoint '/database'.");
-    return this.get('database');
+    return this.get('database')
+    // .pipe(
+    //   map((res: DatabaseServerResponse) => { return res })
+    // );
   }
 
   /**
    * Send GET to user-settings endpoint
    */
-  public getUserSettings() {
+  public getUserSettings(): Observable<any> {
     console.log("Sending GET request to endpoint '/user-settings'.");
-    return this.get('user-settings')
-      .pipe(
-        map((res: SettingsServerResponse) => {return res})
-      );
+    return this.get('user-settings').pipe(
+      map((res: SettingsServerResponse) => { return res })
+    );
   }
 
   /**
    * PUT body to 'user' endpoint to update user preferences
-   * @param body 
+   * @param body
+   * @returns an Observable that can be subcribed to for a Message about the success/failure of the update
    */
-  public updateUserSettings(body: any) {
+  public updateUserSettings(body: any): Observable<any> {
     body = JSON.stringify(body);
     console.log("Sending PUT request to endpoint '/user-settings'.");
     return this.put(body, 'user-settings').pipe(
-      map((res: ServerResponse) => {return res})
+      map((res: ServerResponse) => {
+        let msg: Message = {
+          type: "success",
+          message: res.message
+        };
+        return msg;
+      })
     );
   }
 
   /**
    * Send GET to 'email-me' endpoint to request a test email from back-end 
+   * @returns an Observable that can be subcribed to for a Message about the success/failure of the send
    */
-  public sendTestEmail() {
+  public sendTestEmail(): Observable<any> {
     console.log("Sending GET request to endpoint '/email-me'.");
-    return this.get('email-me');
+    return this.get('email-me').pipe(
+      map((res: ServerResponse) => {
+        let msg: Message = {
+          type: "success",
+          message: res.message
+        };
+        return msg;
+      })
+    );
   }
 
   /**
    * Send GET to 'send-report' endpoint to force the back-end to generate a report now and send it to 
    * the email address saved in settings
+   * @returns an Observable that can be subcribed to for a Message about the success/failure of the send
    */
-  public sendReport() {
+  public sendReport(): Observable<any> {
     console.log("Sending GET request to endpoint '/send-report'.");
-    return this.get('send-report');
+    return this.get('send-report').pipe(
+      map((res: ServerResponse) => {
+        let msg: Message = {
+          type: "success",
+          message: res.message
+        };
+        return msg;
+      })
+    );
   }
 
   //#endregion
@@ -78,7 +106,7 @@ export class HttpService {
    * @param httpOptions
    * @returns an Observable
    */
-  private get(endpoint: string, httpOptions?: any) {
+  private get(endpoint: string, httpOptions?: any): Observable<any> {
     if(!httpOptions) httpOptions = {}
 
     return this.http.get(`${this.url}/${endpoint}`, httpOptions)
@@ -94,7 +122,7 @@ export class HttpService {
    * @param httpOptions 
    * @returns an Observable
    */
-  private put(body: string, endpoint: string, httpOptions?: any) {
+  private put(body: string, endpoint: string, httpOptions?: any): Observable<any> {
     if(!httpOptions) httpOptions = {}
     body = JSON.stringify(body);
 
@@ -111,7 +139,7 @@ export class HttpService {
    * @param httpOptions 
    * @returns an Observable
    */
-  private post(body: string, endpoint: string, httpOptions?: any) {
+  private post(body: string, endpoint: string, httpOptions?: any): Observable<any> {
     if(!httpOptions) httpOptions = {}
     body = JSON.stringify(body);
 
@@ -122,12 +150,18 @@ export class HttpService {
   }
 
   /**
-   * Handle HTTP errors
+   * Handle HTTP errors, logging and returning an error message
    * @param err 
    */
-  private handleError(err: HttpErrorResponse) {
+  private handleError(err: HttpErrorResponse): Observable<any> {
+    //log error
     console.error(err);
-    return Observable.throw(err);
+    //replace errored Observable with Observable containing error message
+    let msg: Message = {
+      type: "error",
+      message: ((err && err.error && err.error.message) ? err.error.message : (err.message ? err.message : err.error))
+    };
+    return of(msg);
   }
 
   //#endregion
