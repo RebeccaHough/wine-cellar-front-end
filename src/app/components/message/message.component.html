@@ -1,0 +1,20 @@
+<mat-card *ngIf="msg" >
+  <!-- Error -->
+  <ng-container *ngIf="msg.type == 'error'">
+    <mat-card-title>An error occured</mat-card-title>
+    <mat-card-content>{{msg.message}}</mat-card-content>
+    <mat-card-actions>
+      <button mat-button color="warn" (click)="close()">Close</button>
+    </mat-card-actions>
+  </ng-container>
+
+  <!-- Success -->
+  <ng-container *ngIf="msg.type == 'success'">
+    <mat-card-title>Success</mat-card-title>
+    <mat-card-content>{{msg.message}}</mat-card-content>
+    <mat-card-actions>
+      <button mat-button color="accent" (click)="close()">Close</button>
+    </mat-card-actions>
+  </ng-container>
+  
+</mat-card>

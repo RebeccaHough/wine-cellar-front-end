@@ -1,6 +1,6 @@
 import { Component } from '@angular/core';
 import { HttpService } from '../../services/http.service';
-import { ErrorMessageService } from '../../services/error-message.service';
+import { MessageService } from '../../services/message.service';
 
 @Component({
   selector: 'app-view-data',
@@ -9,14 +9,24 @@ import { ErrorMessageService } from '../../services/error-message.service';
 })
 export class ViewDataComponent {
 
-  constructor(private http: HttpService, private errorMessageService: ErrorMessageService) { }
+  constructor(private http: HttpService, private messageService: MessageService) { }
     
   /**
    * Get entire database
    */
   public getDatabase() {
     this.http.getDatabase()
-    .subscribe(data => {});
-    //TODO .catch(err => {this.errorMessageService.setMessage(err.err.message)});
+    .subscribe(data => {
+      //TODO
+    },
+    (err) => {
+      console.log(err);
+      this.messageService.setMessage({
+        type: "error",
+        message: "Failed to get database from back-end.\n" + (
+          (err && err.error && err.error.message) ? err.error.message : (err.message ? err.message : err.error)
+        )
+      });
+    });
   }
 }

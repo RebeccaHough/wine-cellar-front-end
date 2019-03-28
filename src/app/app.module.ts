@@ -17,10 +17,10 @@ import { ViewDataComponent } from './components/view-data/view-data.component';
 import { SettingsComponent } from './components/settings/settings.component';
 import { TestsComponent } from './components/tests/tests.component';
 import { FooterComponent } from './components/footer/footer.component';
-import { ErrorMessageComponent } from './components/error-message/error-message.component';
+import { MessageComponent } from './components/message/message.component';
 
 import { HttpService } from './services/http.service';
-import { ErrorMessageService } from './services/error-message.service';
+import { MessageService } from './services/message.service';
 
 const routes: Routes = [
   { path: 'view-data', component: ViewDataComponent },
@@ -39,7 +39,7 @@ const routes: Routes = [
     SettingsComponent,
     TestsComponent,
     FooterComponent,
-    ErrorMessageComponent
+    MessageComponent
   ],
   entryComponents: [
     DialogComponent
@@ -56,7 +56,7 @@ const routes: Routes = [
   ],
   providers: [
     HttpService,
-    ErrorMessageService
+    MessageService
   ],
   bootstrap: [AppComponent]
 })
