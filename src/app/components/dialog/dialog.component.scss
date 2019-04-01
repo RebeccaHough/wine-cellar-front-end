@@ -3,7 +3,13 @@
 	max-width: 500px;
 	width: 100%;
 }
-
 .full-width {
 	width: 100%;
+}
+.radio-group {
+	display: flex;
+	padding: 5px 0 10px 0;
+}
+.mat-radio-button ~ .mat-radio-button {
+	margin-left: 16px;
 }

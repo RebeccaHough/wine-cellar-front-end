@@ -19,9 +19,10 @@ export class DialogComponent {
     this.title = data.title;
     this.description = data.description;
     this.form = data.form;
+    //disable clicking outside box to close dialog, to prevent save from triggering when the user does this
+    //could reenable this if there is a way to ensure that close() is called instead of save() if the dialog is closed in this way
+    dialogRef.disableClose = true;
   }
-
-  //TODO don't call save when clicking outside box or disable clicking outside box to close
 
   save() {
     console.log("Saving changes made in dialog.");

@@ -11,6 +11,7 @@ import { MessageService } from 'src/app/services/message.service';
 import { ServerResponse } from '../../interfaces/server-response.interface';
 import { HttpErrorResponse } from '@angular/common/http';
 import { Message } from 'src/app/interfaces/message.interface';
+import { Report } from 'src/app/interfaces/settings-interfaces/report.interface';
 
 @Component({
   selector: 'app-settings',
@@ -175,12 +176,70 @@ export class SettingsComponent {
    * Initialise and manage reports dialog
    */
   public openReportDialog() {
-    let dialogRef = this.dialog.open(DialogComponent, {
-      data: { 
-        title: "Report Generation",
-        type: "report",
-        form: null 
-      }
+    this.getSettings().then((settings: UserSettings) => {
+      let reportParams: Report;
+      //get report params
+      if(settings.reportParams) //TODO error handling if this fails
+        reportParams = settings.reportParams;
+
+      //build reactive form
+      //TODO should write own validators, for booleans and numbers
+      let form = this.fb.group({
+        showTemperature: [reportParams.showTemperature, [
+          Validators.required
+        ]],
+        showHumidity: [reportParams.showHumidity, [
+          Validators.required
+        ]],
+        reportGenerationFrequency: [reportParams.reportGenerationFrequency, [
+          Validators.required
+        ]]
+      });
+  
+      //open dialog, with type, title, description and form
+      let dialogRef = this.dialog.open(DialogComponent, {
+        data: { 
+          type: "report",
+          title: "Report Generation",
+          description: `<p> Report generation settings are shown below. </p>`,
+          form: form
+        }
+      });
+
+      //if email address was changed, update it
+      dialogRef.afterClosed().subscribe((form: FormGroup) => {
+        console.log("Received form", form);
+        if(form && form.value && form.value.reportParams) {
+          console.log("Dialog closed with changes to save. Attempting save...");
+          //store new settings in a variable, in case send fails
+          let newSettings = settings;
+          newSettings.reportParams = form.value.reportParams;
+
+          //send settings to back-end subscribe and inform user if update was succesful
+          this.http.updateUserSettings(settings)
+          .subscribe((res: Message) => {
+            console.log("Succesfully updated report generation settings.");
+            res.message = "Succesfully updated report generation settings.\n" + res.message;
+            this.messageService.setMessage(res);
+            //update this.settings
+            this.settings = newSettings;
+          },
+          (err: Message) => {
+            //catch failure to update settings on back-end
+            console.log("Failed to update report generation settings.");
+            //add user-friendly explanation
+            err.message = "Failed to update report generation settings.\n" + err.message;
+            this.messageService.setMessage(err);
+          });
+        } else {
+          console.log("Dialog closed with no changes to save.");
+        }
+      }); //don't catch errors that occur when closing dialog 
+    }).catch((err: Message) => {
+      //catch failure to get settings
+      console.log("Failed to get user settings.");
+      err.message = "Failed to get user settings from back-end.\n" + err.message;
+      this.messageService.setMessage(err);
     });
   }
 
@@ -194,6 +253,68 @@ export class SettingsComponent {
         type: "data",
         form: null 
       }
+    });
+    this.getSettings().then((settings: UserSettings) => {
+      let email = "";
+      //get email address
+      if(settings.userEmailAddress)
+        email = settings.userEmailAddress;
+
+      //build reactive form
+      let form = this.fb.group({
+        email: [email, [
+          Validators.required,
+          Validators.email
+        ]]
+      });
+  
+      //open dialog, with type, title, description and form
+      let dialogRef = this.dialog.open(DialogComponent, {
+        data: { 
+          type: "email",
+          title: "Email address",
+          description: `
+            <div> The email address currently used to send alarms and reports to is shown below. </div>
+            <p> To use a different email address, edit the address below and hit 'Save changes'. </p>
+          `,
+          form: form
+        }
+      });
+
+      //if email address was changed, update it
+      dialogRef.afterClosed().subscribe((form: FormGroup) => {
+        console.log("Received form", form);
+        if(form && form.value && form.value.email) {
+          console.log("Dialog closed with changes to save. Attempting save...");
+          //store new settings in a variable, in case send fails
+          let newSettings = settings;
+          newSettings.userEmailAddress = form.value.email;
+
+          //send settings to back-end subscribe and inform user if update was succesful
+          this.http.updateUserSettings(settings)
+          .subscribe((res: Message) => {
+            console.log("Succesfully updated settings.");
+            res.message = "Succesfully updated settings.\n" + res.message;
+            this.messageService.setMessage(res);
+            //update this.settings
+            this.settings = newSettings;
+          },
+          (err: Message) => {
+            //catch failure to update settings on back-end
+            console.log("Failed to update user settings.");
+            //add user-friendly explanation
+            err.message = "Failed to update email address.\n" + err.message;
+            this.messageService.setMessage(err);
+          });
+        } else {
+          console.log("Dialog closed with no changes to save.");
+        }
+      }); //don't catch errors that occur when closing dialog 
+    }).catch((err: Message) => {
+      //catch failure to get settings
+      console.log("Failed to get user settings.");
+      err.message = "Failed to get user settings from back-end.\n" + err.message;
+      this.messageService.setMessage(err);
     });
   }
 }

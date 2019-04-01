@@ -32,9 +32,8 @@
   <ng-container *ngIf="type == 'email'">
     <form class="form" [formGroup]="form">
       <mat-form-field class="full-width">
-        <!-- [formControl]="email", could do placeholder text programatically -->
-        <input matInput placeholder="Enter your email address" formControlName="email">
-        <!-- TODO could do this dynamically (error message), will need to get the [email] better in diff dialog types -->
+        <input matInput placeholder="Email address" formControlName="email">
+        <!-- TODO should get error messages programmatically -->
         <mat-error *ngIf="form.controls.email.invalid && form.controls.email.touched">
           Invalid Email
         </mat-error>
@@ -43,7 +42,44 @@
   </ng-container>
 
   <!-- Report Generation -->
-  <ng-container *ngIf="type == 'report'"></ng-container>
+  <ng-container *ngIf="type == 'report'">
+    <form class="form" [formGroup]="form">
+      <!-- TODO should get/set labels programmatically -->
+      <!-- Temperature -->
+      <label id="showTemperature-label">Whether reports should display temperature</label>
+      <mat-radio-group
+        aria-labelledby="showTemperature-label"
+        formControlName="showTemperature"
+        class="full-width radio-group">
+        <!-- TODO should get values programmatically -->
+        <mat-radio-button value="true" [checked]="form.controls.showTemperature.value === true">True</mat-radio-button>
+        <mat-radio-button value="false" [checked]="form.controls.showTemperature.value === false">False</mat-radio-button>
+        <!-- TODO should get error messages programmatically -->
+        <mat-error *ngIf="form.controls.showTemperature.invalid && form.controls.showTemperature.touched">
+          Please select either true or false for display temperature.
+        </mat-error>
+      </mat-radio-group>
+      <!-- Humidity -->
+      <label id="showHumidity-label">Whether reports should display humidity</label>
+      <mat-radio-group
+        aria-labelledby="showHumidity-label"
+        formControlName="showHumidity"
+        class="full-width radio-group">
+        <mat-radio-button value="true" [checked]="form.controls.showHumidity.value === true">True</mat-radio-button>
+        <mat-radio-button value="false" [checked]="form.controls.showHumidity.value === false">False</mat-radio-button>
+        <mat-error *ngIf="form.controls.showHumidity.invalid && form.controls.showHumidity.touched">
+          Please select either true or false for display humidity.
+        </mat-error>
+      </mat-radio-group>
+      <!-- Report generation frequency -->
+      <mat-form-field class="full-width">
+        <input matInput placeholder="A time in seconds for how often to generate reports" formControlName="reportGenerationFrequency">
+        <mat-error *ngIf="form.controls.reportGenerationFrequency.invalid && form.controls.reportGenerationFrequency.touched">
+          Please enter a time in seconds for report generation frequency.
+        </mat-error>
+      </mat-form-field>
+    </form>
+  </ng-container>
 
   <!-- Data Collection -->
   <ng-container *ngIf="type == 'data'"></ng-container>
