@@ -10,7 +10,7 @@
   <ng-container *ngIf="type == 'alarms'">
     The complete list of alarms is shown here:
     <ul>
-      <li *ngFor="let alarm of form">
+      <li *ngFor="let alarm of form.value.alarms">
         <p>{{alarm.name}}, {{alarm.condtion}}, {{alarm.isSubscribedTo}}</p>
         <!-- <var 1 dropdown>
           time/temp/hum

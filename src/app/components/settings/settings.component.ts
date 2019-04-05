@@ -39,6 +39,7 @@ export class SettingsComponent {
           res => {
             console.log("Got", res)
             if(res.data) { //type = SettingsServerResponse
+              console.log("hi")
               this.settings = res.data;
               resolve(this.settings); //type = UserSettings
             } else { //type = Message
@@ -52,6 +53,8 @@ export class SettingsComponent {
       });
     }
   }
+  
+  //TODO lots of repeated code follows, should refactor
 
   /**
    * Initialise and manage email dialog
@@ -125,50 +128,78 @@ export class SettingsComponent {
    * Initialise and manage alarms dialog
    */
   public openAlarmsDialog() {
-    //send all alarms to dialog
-    //store settings in variable for later use in afterClosed()
-    //TODO get alarms = getAlarms() with error handling
-    let alarms = [
-      {
-        name: "Alarm 1",
-        condtion: "hello",
-        isSubscribedTo: false
-      },
-      {
-        name: "Alarm 2",
-        condtion: "goodbye",
-        isSubscribedTo: true
+    this.getSettings().then((settings: UserSettings) => {
+      let alarms: Alarm[];
+      //get report params
+      if(settings.alarms) //TODO error handling if this fails
+        alarms = settings.alarms;
+ 
+      //build reactive form array
+      let alarmsForms: FormArray = this.fb.array([]);
+      for(let alarm of alarms) {
+        let alarmsForm: FormGroup = this.fb.group({});
+        for(let prop in alarm) {
+          //for every property in every alarm, add to form array
+          alarmsForm.addControl(prop, new FormControl(alarm[prop], [Validators.required]));
+        }
+        alarmsForms.push(alarmsForm);
       }
-    ]
+     
+      //wrap form array in form group to avoid rewriting dialog component to accept FormArray | FormGroup
+      let form = this.fb.group({
+        alarms: alarmsForms
+      });
+      console.log(form);
+  
+      //open dialog, with type, title, description and form
+      let dialogRef = this.dialog.open(DialogComponent, {
+        data: { 
+          type: "alarms",
+          title: "Alarms",
+          description: `<p> The alarms currently used in the system are shown below. </p>`,
+          form: form
+        }
+      });
 
-    //create form controls based on alarms received
-    let alarmsForms: FormArray;
-    for(let alarm of alarms) {
-      let alarmsForm: FormGroup;
-      for(let prop in alarm) {
-        alarmsForm.addControl(prop, new FormControl(alarm[prop]));
-      }
-      alarmsForms.push(alarmsForm);
-    }
-    // alarmsForm = this.fb.group({
-    //     description: [description, []],
-    // });
+      //if alarms array was changed, update it
+      dialogRef.afterClosed().subscribe((form: FormGroup) => {
+        console.log("Received form", form);
+        if(form && form.value && form.value.alarms) {
+          console.log("Dialog closed with changes to save. Attempting save...");
+          //store new settings in a variable, in case send fails
+          let newSettings = settings;
+          newSettings.alarms = form.value.alarms;
 
-    //the second argument is a MatDialogConfig object with properties such as autoFocus, disableClose and data
-    let dialogRef = this.dialog.open(DialogComponent, {
-      data: { 
-        title: "Alarms",
-        type: "alarms",
-        form: alarmsForms 
-      }
-    });
-
-    dialogRef.afterClosed().subscribe((alarms: Alarm[]) => {
-      if(alarms) {
-        //TODO append alarms to settings
-        console.log("TODO");
-        // this.http.updateUserPrefs(prefs);
-      }
+          //send settings to back-end subscribe and inform user if update was succesful
+          this.http.updateUserSettings(settings)
+          .subscribe((res: Message) => {
+            console.log("Succesfully updated alarms.");
+            res.message = "Succesfully updated alarms.\n" + res.message;
+            this.messageService.setMessage(res);
+            //update this.settings
+            this.settings = newSettings;
+          },
+          (err: Message) => {
+            //catch failure to update settings on back-end
+            console.log("Failed to update alarms.");
+            //add user-friendly explanation
+            err.message = "Failed to update alarms.\n" + err.message;
+            this.messageService.setMessage(err);
+          });
+        } else {
+          console.log("Dialog closed with no changes to save.");
+        }
+      }); //don't catch errors that occur when closing dialog 
+    }).catch((err: Message) => {
+      //TODO prevent this from catching errors that occur in then
+      console.log(err);
+      //catch failure to get settings
+      console.log("Failed to get user settings.");
+      if(err.message)
+        err.message = "Failed to get user settings from back-end.\n" + err.message;
+      else
+        err.message = "Failed to get user settings from back-end.\n";
+      this.messageService.setMessage(err);
     });
   }
 
