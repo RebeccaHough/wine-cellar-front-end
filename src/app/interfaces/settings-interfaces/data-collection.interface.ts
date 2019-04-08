@@ -1,5 +1,5 @@
 export interface DataCollection {
+    sensorPollingRate: number,
     collectTemperature: boolean,
-    collectHumidity: boolean,
-    sensorpollingRate: number
+    collectHumidity: boolean
 }

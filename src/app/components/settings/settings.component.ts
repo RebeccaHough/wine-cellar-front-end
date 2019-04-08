@@ -1,17 +1,17 @@
 import { Component } from '@angular/core';
 import { FormControl, FormGroup, FormBuilder, FormArray, Validators } from '@angular/forms';
-import { HttpService } from '../../services/http.service';
-import { DialogComponent } from '../dialog/dialog.component';
 import { MatDialog } from '@angular/material/dialog';
-import { SettingsServerResponse } from 'src/app/interfaces/settings-server-response.interface';
-import { Alarm } from 'src/app/interfaces/settings-interfaces/alarm.interface';
-import { UserSettings } from 'src/app/interfaces/settings-interfaces/user-settings.interface';
 
+import { HttpService } from '../../services/http.service';
 import { MessageService } from 'src/app/services/message.service';
-import { ServerResponse } from '../../interfaces/server-response.interface';
-import { HttpErrorResponse } from '@angular/common/http';
+
+import { DialogComponent } from '../dialog/dialog.component';
+
 import { Message } from 'src/app/interfaces/message.interface';
+import { UserSettings } from 'src/app/interfaces/settings-interfaces/user-settings.interface';
+import { Alarm } from 'src/app/interfaces/settings-interfaces/alarm.interface';
 import { Report } from 'src/app/interfaces/settings-interfaces/report.interface';
+import { DataCollection } from 'src/app/interfaces/settings-interfaces/data-collection.interface';
 
 @Component({
   selector: 'app-settings',
@@ -39,7 +39,6 @@ export class SettingsComponent {
           res => {
             console.log("Got", res)
             if(res.data) { //type = SettingsServerResponse
-              console.log("hi")
               this.settings = res.data;
               resolve(this.settings); //type = UserSettings
             } else { //type = Message
@@ -99,18 +98,13 @@ export class SettingsComponent {
           //send settings to back-end subscribe and inform user if update was succesful
           this.http.updateUserSettings(settings)
           .subscribe((res: Message) => {
-            console.log("Succesfully updated settings.");
-            res.message = "Succesfully updated settings.\n" + res.message;
-            this.messageService.setMessage(res);
+            this.handleMessage(res, "Succesfully updated email address.");
             //update this.settings
             this.settings = newSettings;
           },
           (err: Message) => {
             //catch failure to update settings on back-end
-            console.log("Failed to update user settings.");
-            //add user-friendly explanation
-            err.message = "Failed to update email address.\n" + err.message;
-            this.messageService.setMessage(err);
+            this.handleMessage(err, "Failed to update email address.");
           });
         } else {
           console.log("Dialog closed with no changes to save.");
@@ -118,9 +112,7 @@ export class SettingsComponent {
       }); //don't catch errors that occur when closing dialog 
     }).catch((err: Message) => {
       //catch failure to get settings
-      console.log("Failed to get user settings.");
-      err.message = "Failed to get user settings from back-end.\n" + err.message;
-      this.messageService.setMessage(err);
+      this.handleMessage(err, "Failed to get user settings from back-end.");
     });
   }
 
@@ -173,18 +165,13 @@ export class SettingsComponent {
           //send settings to back-end subscribe and inform user if update was succesful
           this.http.updateUserSettings(settings)
           .subscribe((res: Message) => {
-            console.log("Succesfully updated alarms.");
-            res.message = "Succesfully updated alarms.\n" + res.message;
-            this.messageService.setMessage(res);
+            this.handleMessage(res, "Succesfully updated alarms.");
             //update this.settings
             this.settings = newSettings;
           },
           (err: Message) => {
             //catch failure to update settings on back-end
-            console.log("Failed to update alarms.");
-            //add user-friendly explanation
-            err.message = "Failed to update alarms.\n" + err.message;
-            this.messageService.setMessage(err);
+            this.handleMessage(err, "Failed to update alarms.");
           });
         } else {
           console.log("Dialog closed with no changes to save.");
@@ -194,12 +181,7 @@ export class SettingsComponent {
       //TODO prevent this from catching errors that occur in then
       console.log(err);
       //catch failure to get settings
-      console.log("Failed to get user settings.");
-      if(err.message)
-        err.message = "Failed to get user settings from back-end.\n" + err.message;
-      else
-        err.message = "Failed to get user settings from back-end.\n";
-      this.messageService.setMessage(err);
+      this.handleMessage(err, "Failed to get user settings from back-end.");
     });
   }
 
@@ -249,18 +231,13 @@ export class SettingsComponent {
           //send settings to back-end subscribe and inform user if update was succesful
           this.http.updateUserSettings(settings)
           .subscribe((res: Message) => {
-            console.log("Succesfully updated report generation settings.");
-            res.message = "Succesfully updated report generation settings.\n" + res.message;
-            this.messageService.setMessage(res);
+            this.handleMessage(res, "Succesfully updated report generation settings.");
             //update this.settings
             this.settings = newSettings;
           },
           (err: Message) => {
             //catch failure to update settings on back-end
-            console.log("Failed to update report generation settings.");
-            //add user-friendly explanation
-            err.message = "Failed to update report generation settings.\n" + err.message;
-            this.messageService.setMessage(err);
+            this.handleMessage(err, "Failed to update report generation settings.");
           });
         } else {
           console.log("Dialog closed with no changes to save.");
@@ -268,9 +245,7 @@ export class SettingsComponent {
       }); //don't catch errors that occur when closing dialog 
     }).catch((err: Message) => {
       //catch failure to get settings
-      console.log("Failed to get user settings.");
-      err.message = "Failed to get user settings from back-end.\n" + err.message;
-      this.messageService.setMessage(err);
+      this.handleMessage(err, "Failed to get user settings.");
     });
   }
 
@@ -278,35 +253,34 @@ export class SettingsComponent {
    * Initialise and manage data collection settings dialog
    */
   public openDataCollectionDialog() {
-    let dialogRef = this.dialog.open(DialogComponent, {
-      data: { 
-        title: "Data Collection",
-        type: "data",
-        form: null 
-      }
-    });
     this.getSettings().then((settings: UserSettings) => {
-      let email = "";
-      //get email address
-      if(settings.userEmailAddress)
-        email = settings.userEmailAddress;
+      let dataCollection: DataCollection;
+      //get data collection settings
+      if(settings.dataCollectionParams)
+        dataCollection = settings.dataCollectionParams;
+        else 
+        console.warn('error')
 
       //build reactive form
       let form = this.fb.group({
-        email: [email, [
-          Validators.required,
-          Validators.email
+        sensorPollingRate: [dataCollection.sensorPollingRate, [
+          Validators.required
+        ]],
+        collectTemperature: [dataCollection.collectTemperature, [
+          Validators.required
+        ]],
+        collectHumidity: [dataCollection.collectHumidity, [
+          Validators.required
         ]]
       });
   
       //open dialog, with type, title, description and form
       let dialogRef = this.dialog.open(DialogComponent, {
         data: { 
-          type: "email",
-          title: "Email address",
+          type: "dataCollection",
+          title: "Data Collection Settings",
           description: `
-            <div> The email address currently used to send alarms and reports to is shown below. </div>
-            <p> To use a different email address, edit the address below and hit 'Save changes'. </p>
+            <p> Current sensor data collection settings are shown below. </p>
           `,
           form: form
         }
@@ -315,27 +289,22 @@ export class SettingsComponent {
       //if email address was changed, update it
       dialogRef.afterClosed().subscribe((form: FormGroup) => {
         console.log("Received form", form);
-        if(form && form.value && form.value.email) {
+        if(form && form.value && form.value.collectHumidity && form.value.collectTemperature && form.value.sensorPollingRate) {
           console.log("Dialog closed with changes to save. Attempting save...");
           //store new settings in a variable, in case send fails
           let newSettings = settings;
-          newSettings.userEmailAddress = form.value.email;
+          newSettings.dataCollectionParams = form.value;
 
           //send settings to back-end subscribe and inform user if update was succesful
           this.http.updateUserSettings(settings)
           .subscribe((res: Message) => {
-            console.log("Succesfully updated settings.");
-            res.message = "Succesfully updated settings.\n" + res.message;
-            this.messageService.setMessage(res);
+            this.handleMessage(res, "Succesfully updated settings.");
             //update this.settings
             this.settings = newSettings;
           },
           (err: Message) => {
             //catch failure to update settings on back-end
-            console.log("Failed to update user settings.");
-            //add user-friendly explanation
-            err.message = "Failed to update email address.\n" + err.message;
-            this.messageService.setMessage(err);
+            this.handleMessage(err, "Failed to update email address.");
           });
         } else {
           console.log("Dialog closed with no changes to save.");
@@ -343,9 +312,21 @@ export class SettingsComponent {
       }); //don't catch errors that occur when closing dialog 
     }).catch((err: Message) => {
       //catch failure to get settings
-      console.log("Failed to get user settings.");
-      err.message = "Failed to get user settings from back-end.\n" + err.message;
-      this.messageService.setMessage(err);
+      this.handleMessage(err, "Failed to get user settings from back-end.");
     });
   }
+
+  /**
+   * Output error message to console and screen
+   * @param {Message} msg a Message. Can be positive or negative. Typically a response from server/http service, though not always
+   * @param {string} user_msg user-friendly message to show the user
+   */
+  handleMessage(msg: Message, user_msg: string) {
+    //print error to console
+    console.log(user_msg, msg);
+    //add user-friendly explanation to error message
+    msg.message = user_msg + '\n' + msg.message;
+    this.messageService.setMessage(msg);
+  }
+
 }

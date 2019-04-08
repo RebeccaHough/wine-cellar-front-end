@@ -82,7 +82,45 @@
   </ng-container>
 
   <!-- Data Collection -->
-  <ng-container *ngIf="type == 'data'"></ng-container>
+  <ng-container *ngIf="type == 'dataCollection'">
+    <form class="form" [formGroup]="form">
+      <!-- Sensor Polling Rate -->
+      <mat-form-field class="full-width">
+        <input matInput placeholder="A time in seconds for how often to take sensor readings" formControlName="sensorPollingRate">
+        <mat-error *ngIf="form.controls.sensorPollingRate.invalid && form.controls.sensorPollingRate.touched">
+          Please enter a time in seconds for how often to take sensor readings.
+        </mat-error>
+      </mat-form-field>
+      <!-- Collect temperature -->
+      <label id="collectTemperature-label">Whether sensors should record temperature</label>
+      <mat-radio-group
+        aria-labelledby="collectTemperature-label"
+        formControlName="collectTemperature"
+        class="full-width radio-group">
+        <!-- TODO should get values programmatically -->
+        <mat-radio-button value="true" [checked]="form.controls.collectTemperature.value === true">True</mat-radio-button>
+        <mat-radio-button value="false" [checked]="form.controls.collectTemperature.value === false">False</mat-radio-button>
+        <!-- TODO should get error messages programmatically -->
+        <mat-error *ngIf="form.controls.collectTemperature.invalid && form.controls.collectTemperature.touched">
+          Please select either true or false for display temperature.
+        </mat-error>
+      </mat-radio-group>
+      <!-- Collect humidity -->
+      <label id="collectHumidity-label">Whether sensors should record humidity</label>
+      <mat-radio-group
+        aria-labelledby="collectHumidity-label"
+        formControlName="collectHumidity"
+        class="full-width radio-group">
+        <!-- TODO should get values programmatically -->
+        <mat-radio-button value="true" [checked]="form.controls.collectHumidity.value === true">True</mat-radio-button>
+        <mat-radio-button value="false" [checked]="form.controls.collectHumidity.value === false">False</mat-radio-button>
+        <!-- TODO should get error messages programmatically -->
+        <mat-error *ngIf="form.controls.collectHumidity.invalid && form.controls.collectHumidity.touched">
+          Please select either true or false for display temperature.
+        </mat-error>
+      </mat-radio-group>
+    </form>
+  </ng-container>
 
 </mat-dialog-content>
 

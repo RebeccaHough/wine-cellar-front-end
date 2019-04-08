@@ -1,6 +1,6 @@
 import { Injectable } from '@angular/core';
 import { HttpClient, HttpHeaders, HttpErrorResponse } from '@angular/common/http';
-import { Observable, of } from 'rxjs';
+import { Observable, of, throwError } from 'rxjs';
 import { catchError, map } from 'rxjs/operators';
 
 import { SettingsServerResponse } from '../interfaces/settings-server-response.interface';
@@ -156,12 +156,13 @@ export class HttpService {
   private handleError(err: HttpErrorResponse): Observable<any> {
     //log error
     console.error(err);
-    //replace errored Observable with Observable containing error message
+    //replace errored Observable with an errored Observable (so it still goes to the (err => {}) 
+    //catches in subscribes) containing error message
     let msg: Message = {
       type: "error",
       message: ((err && err.error && err.error.message) ? err.error.message : (err.message ? err.message : err.error))
     };
-    return of(msg);
+    return throwError(msg);
   }
 
   //#endregion
