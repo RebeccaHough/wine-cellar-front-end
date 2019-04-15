@@ -34,4 +34,17 @@ export class DialogComponent {
     console.log("Closing dialog without saving.");
     this.dialogRef.close();
   }
+
+  //#region Alarms table
+
+  updateTable() {
+    //renderRows();
+  }
+
+  addAlarm() {}
+
+  deleteAlarm() {}
+
+  //#endregion
+
 }

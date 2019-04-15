@@ -4,7 +4,8 @@ import { MatDialogModule } from '@angular/material/dialog';
 import { MatDividerModule } from '@angular/material/divider';
 import { MatFormFieldModule } from '@angular/material/form-field';
 import { MatCardModule } from '@angular/material/card';
-import  {MatRadioModule } from '@angular/material/radio';
+import { MatRadioModule } from '@angular/material/radio';
+import { MatTableModule } from '@angular/material/table';
 
 @NgModule({
   imports: [
@@ -16,7 +17,8 @@ import  {MatRadioModule } from '@angular/material/radio';
      MatFormFieldModule,
      MatCardModule,
      MatInputModule,
-     MatRadioModule
+     MatRadioModule,
+     MatTableModule
   ],
   exports: [
     MatButtonModule, 
@@ -27,7 +29,8 @@ import  {MatRadioModule } from '@angular/material/radio';
     MatFormFieldModule,
     MatCardModule,
     MatInputModule,
-    MatRadioModule
+    MatRadioModule,
+    MatTableModule
   ]
 })
 export class MaterialModule { }

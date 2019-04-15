@@ -53,7 +53,7 @@ export class SettingsComponent {
     }
   }
   
-  //TODO lots of repeated code follows, should refactor
+  //TODO lots of similar/repeated code follows, should refactor
 
   /**
    * Initialise and manage email dialog
