@@ -9,36 +9,79 @@
   <!-- Alarms -->
   <ng-container *ngIf="type == 'alarms'">
     The complete list of alarms is shown here:
-    <table mat-table [dataSource]="form.value.alarms" class="mat-elevation">
-        <tr mat-header-row *matHeaderRowDef="['name', 'condition', 'isSubscribedTo', 'checkFrequency', 'actions']; sticky: true"></tr>
-        <tr mat-row *matRowDef="let row; columns: ['name', 'condition', 'isSubscribedTo', 'checkFrequency', 'actions'];"></tr>
+    <form [formGroup]="form">
+      <ng-container formArrayName="alarms">
+        <table mat-table [dataSource]="alarms.controls" class="mat-elevation">
+          <tr mat-header-row *matHeaderRowDef="['name', 'condition', 'isSubscribedTo', 'checkFrequency', 'actions']; sticky: true"></tr>
+          <tr mat-row *matRowDef="let row; columns: ['name', 'condition', 'isSubscribedTo', 'checkFrequency', 'actions'];"></tr>
 
-        <ng-container matColumnDef="name">
-          <th mat-header-cell *matHeaderCellDef> Alarm name </th>
-          <td mat-cell *matCellDef="let alarm"> {{alarm.name}} </td>
-        </ng-container>
-        <ng-container matColumnDef="condition">
-            <th mat-header-cell *matHeaderCellDef> Condition </th>
-            <td mat-cell *matCellDef="let alarm"> {{alarm.condtion}} </td>
-        </ng-container>
-        <ng-container matColumnDef="isSubscribedTo">
-            <th mat-header-cell *matHeaderCellDef> Subscribed? </th>
-            <td mat-cell *matCellDef="let alarm"> {{alarm.isSubscribedTo}} </td>
-        </ng-container>
-        <ng-container matColumnDef="checkFrequency">
-            <th mat-header-cell *matHeaderCellDef> Check frequency </th>
-            <td mat-cell *matCellDef="let alarm"> {{alarm.checkFrequency}} </td>
-        </ng-container>
-        <ng-container matColumnDef="actions">
-            <th mat-header-cell *matHeaderCellDef> Actions </th>
-            <td mat-cell *matCellDef="let alarm">
-              <button mat-button class="mat-raised-button mat-primary">Delete</button>
+          <ng-container matColumnDef="name">
+            <th mat-header-cell *matHeaderCellDef> Alarm name </th>
+            <td mat-cell *matCellDef="let alarm" [formGroup]="alarm"> 
+              <mat-form-field class="full-width">
+                <input matInput formControlName="name">
+              </mat-form-field>
             </td>
-        </ng-container>
-      </tbody>
-    </table>
-    <button mat-button class="mat-raised-button mat-primary">New Alarm</button>
-    
+          </ng-container>
+          <ng-container matColumnDef="condition">
+              <th mat-header-cell *matHeaderCellDef> Condition </th>
+              <td mat-cell *matCellDef="let alarm" [formGroup]="alarm">
+                <!--
+                  if
+                  dropdown temp/hum
+                  dropdown 'goes below', 'goes above','fluctuates'
+                  by
+                  input number
+                  degrees/%Rh
+                -->
+                <form [formGroup]="alarm.controls.condition">
+                  <!-- <mat-form-field>
+                    <mat-select>
+                      <mat-option *ngFor="let var_ of ['temperature', 'humidity']" [value]="">
+                        {{var_}}
+                      </mat-option>
+                    </mat-select>
+                  </mat-form-field> -->
+                  <mat-form-field>
+                    <input matInput formControlName="variable">
+                  </mat-form-field>
+                  <mat-form-field>
+                    <input matInput formControlName="condition">
+                  </mat-form-field>
+                  <mat-form-field>
+                    <input matInput formControlName="value"> degrees/%RH
+                  </mat-form-field>
+                </form>
+              </td>
+          </ng-container>
+          <ng-container matColumnDef="isSubscribedTo">
+              <th mat-header-cell *matHeaderCellDef> Subscribed? </th>
+              <td mat-cell *matCellDef="let alarm" [formGroup]="alarm">
+                <mat-checkbox 
+                  aria-label="Subscribed?"
+                  formControlName="isSubscribedTo"
+                  [checked]="alarm.isSubscribedTo === true"
+                ></mat-checkbox>
+              </td>
+          </ng-container>
+          <ng-container matColumnDef="checkFrequency">
+              <th mat-header-cell *matHeaderCellDef> Check frequency (in seconds)</th>
+              <td mat-cell *matCellDef="let alarm" [formGroup]="alarm">
+                <mat-form-field class="full-width">
+                  <input matInput formControlName="checkFrequency">
+                </mat-form-field>
+              </td>
+          </ng-container>
+          <ng-container matColumnDef="actions">
+              <th mat-header-cell *matHeaderCellDef> Actions </th>
+              <td mat-cell *matCellDef="let alarm">
+                <button mat-button class="mat-raised-button mat-warn">Delete</button>
+              </td>
+          </ng-container>
+        </table>
+      </ng-container>
+    </form>
+    <button mat-button class="mat-raised-button mat-primary" style=" margin: 20px 10px">Create New Alarm</button>
   </ng-container>
 
   <!-- Email -->

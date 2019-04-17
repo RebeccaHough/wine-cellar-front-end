@@ -12,6 +12,7 @@ import { UserSettings } from 'src/app/interfaces/settings-interfaces/user-settin
 import { Alarm } from 'src/app/interfaces/settings-interfaces/alarm.interface';
 import { Report } from 'src/app/interfaces/settings-interfaces/report.interface';
 import { DataCollection } from 'src/app/interfaces/settings-interfaces/data-collection.interface';
+import { conditionallyCreateMapObjectLiteral } from '@angular/compiler/src/render3/view/util';
 
 @Component({
   selector: 'app-settings',
@@ -132,7 +133,18 @@ export class SettingsComponent {
         let alarmsForm: FormGroup = this.fb.group({});
         for(let prop in alarm) {
           //for every property in every alarm, add to form array
-          alarmsForm.addControl(prop, new FormControl(alarm[prop], [Validators.required]));
+          //for alarm condition
+          if(prop == 'condition') {
+            let subForm: FormGroup = this.fb.group({});
+            //add 3 controls
+            subForm.addControl('variable', new FormControl(alarm[prop], [Validators.required]));
+            subForm.addControl('condition', new FormControl(alarm[prop], [Validators.required]));
+            subForm.addControl('value', new FormControl(alarm[prop], [Validators.required]));
+            //add condition control with subform
+            alarmsForm.addControl(prop, subForm);
+          } else {
+            alarmsForm.addControl(prop, new FormControl(alarm[prop], [Validators.required]));
+          }
         }
         alarmsForms.push(alarmsForm);
       }
@@ -161,6 +173,8 @@ export class SettingsComponent {
           //store new settings in a variable, in case send fails
           let newSettings = settings;
           newSettings.alarms = form.value.alarms;
+
+          //TODO concat condition value
 
           //send settings to back-end subscribe and inform user if update was succesful
           this.http.updateUserSettings(settings)

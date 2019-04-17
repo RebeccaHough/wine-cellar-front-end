@@ -1,5 +1,5 @@
 import { Component, Inject } from '@angular/core';
-import { FormGroup } from '@angular/forms';
+import { FormGroup, FormArray } from '@angular/forms';
 import { MatDialogRef } from '@angular/material/dialog';
 import { MAT_DIALOG_DATA } from '@angular/material';
 
@@ -36,6 +36,10 @@ export class DialogComponent {
   }
 
   //#region Alarms table
+
+  get alarms(): FormArray {
+    return this.form.get('alarms') as FormArray;
+  }
 
   updateTable() {
     //renderRows();
