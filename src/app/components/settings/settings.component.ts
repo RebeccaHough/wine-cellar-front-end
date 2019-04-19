@@ -97,7 +97,7 @@ export class SettingsComponent {
           newSettings.userEmailAddress = form.value.email;
 
           //send settings to back-end subscribe and inform user if update was succesful
-          this.http.updateUserSettings(settings)
+          this.http.updateUserSettings(newSettings)
           .subscribe((res: Message) => {
             this.handleMessage(res, "Succesfully updated email address.");
             //update this.settings
@@ -177,7 +177,7 @@ export class SettingsComponent {
           //TODO concat condition value
 
           //send settings to back-end subscribe and inform user if update was succesful
-          this.http.updateUserSettings(settings)
+          this.http.updateUserSettings(newSettings)
           .subscribe((res: Message) => {
             this.handleMessage(res, "Succesfully updated alarms.");
             //update this.settings
@@ -236,14 +236,14 @@ export class SettingsComponent {
       //if email address was changed, update it
       dialogRef.afterClosed().subscribe((form: FormGroup) => {
         console.log("Received form", form);
-        if(form && form.value && form.value.reportParams) {
+        if(form && form.value && form.value.showTemperature && form.value.showHumidity && form.value.reportGenerationFrequency) {
           console.log("Dialog closed with changes to save. Attempting save...");
           //store new settings in a variable, in case send fails
           let newSettings = settings;
-          newSettings.reportParams = form.value.reportParams;
+          newSettings.reportParams = form.value;
 
           //send settings to back-end subscribe and inform user if update was succesful
-          this.http.updateUserSettings(settings)
+          this.http.updateUserSettings(newSettings)
           .subscribe((res: Message) => {
             this.handleMessage(res, "Succesfully updated report generation settings.");
             //update this.settings
@@ -310,7 +310,7 @@ export class SettingsComponent {
           newSettings.dataCollectionParams = form.value;
 
           //send settings to back-end subscribe and inform user if update was succesful
-          this.http.updateUserSettings(settings)
+          this.http.updateUserSettings(newSettings)
           .subscribe((res: Message) => {
             this.handleMessage(res, "Succesfully updated settings.");
             //update this.settings

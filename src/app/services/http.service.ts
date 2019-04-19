@@ -48,7 +48,6 @@ export class HttpService {
    * @returns an Observable that can be subcribed to for a Message about the success/failure of the update
    */
   public updateUserSettings(body: any): Observable<any> {
-    body = JSON.stringify(body);
     console.log("Sending PUT request to endpoint '/user-settings'.");
     return this.put(body, 'user-settings').pipe(
       map((res: ServerResponse) => {
@@ -107,7 +106,7 @@ export class HttpService {
    * @returns an Observable
    */
   private get(endpoint: string, httpOptions?: any): Observable<any> {
-    if(!httpOptions) httpOptions = {}
+    if(!httpOptions) httpOptions = {};
 
     return this.http.get(`${this.url}/${endpoint}`, httpOptions)
       .pipe(
@@ -123,7 +122,7 @@ export class HttpService {
    * @returns an Observable
    */
   private put(body: string, endpoint: string, httpOptions?: any): Observable<any> {
-    if(!httpOptions) httpOptions = {}
+    if(!httpOptions) httpOptions = this.jsonHttpOptions;
     body = JSON.stringify(body);
 
     return this.http.put(`${this.url}/${endpoint}`, body, httpOptions)
