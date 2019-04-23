@@ -12,9 +12,11 @@
     <form [formGroup]="form">
       <ng-container formArrayName="alarms">
         <table mat-table [dataSource]="alarms.controls" class="mat-elevation">
+           <!-- Row definitions -->
           <tr mat-header-row *matHeaderRowDef="['name', 'condition', 'isSubscribedTo', 'checkFrequency', 'actions']; sticky: true"></tr>
-          <tr mat-row *matRowDef="let row; columns: ['name', 'condition', 'isSubscribedTo', 'checkFrequency', 'actions'];"></tr>
+          <tr mat-row *matRowDef="let row; columns: ['name', 'condition', 'isSubscribedTo', 'checkFrequency', 'actions']"></tr>
 
+          <!-- Column definitions -->
           <ng-container matColumnDef="name">
             <th mat-header-cell *matHeaderCellDef> Alarm name </th>
             <td mat-cell *matCellDef="let alarm" [formGroup]="alarm"> 
@@ -24,64 +26,58 @@
             </td>
           </ng-container>
           <ng-container matColumnDef="condition">
-              <th mat-header-cell *matHeaderCellDef> Condition </th>
-              <td mat-cell *matCellDef="let alarm" [formGroup]="alarm">
-                <!--
-                  if
-                  dropdown temp/hum
-                  dropdown 'goes below', 'goes above','fluctuates'
-                  by
-                  input number
-                  degrees/%Rh
-                -->
-                <form [formGroup]="alarm.controls.condition">
-                  <!-- <mat-form-field>
-                    <mat-select>
-                      <mat-option *ngFor="let var_ of ['temperature', 'humidity']" [value]="">
-                        {{var_}}
-                      </mat-option>
-                    </mat-select>
-                  </mat-form-field> -->
-                  <mat-form-field>
-                    <input matInput formControlName="variable">
-                  </mat-form-field>
-                  <mat-form-field>
-                    <input matInput formControlName="condition">
-                  </mat-form-field>
-                  <mat-form-field>
-                    <input matInput formControlName="value"> degrees/%RH
-                  </mat-form-field>
-                </form>
-              </td>
+            <th mat-header-cell *matHeaderCellDef> Condition </th>
+            <td mat-cell *matCellDef="let alarm" [formGroup]="alarm">
+              <form [formGroup]="alarm.controls.condition">
+                <mat-form-field>
+                  <mat-select formControlName="variable">
+                    <mat-option *ngFor="let var_ of ['temperature', 'humidity']" [value]="var_" >
+                      {{var_}}
+                    </mat-option>
+                  </mat-select>
+                </mat-form-field>
+                <mat-form-field>
+                  <mat-select formControlName="condition">
+                    <mat-option *ngFor="let cond of ['>', '<', '==', '<=', '>=']" [value]="cond" >
+                      {{cond}}
+                    </mat-option>
+                  </mat-select>
+                </mat-form-field>
+                <mat-form-field>
+                  <input matInput formControlName="value"> 
+                  <mat-hint align="start">degrees/%RH</mat-hint>
+                </mat-form-field>
+              </form>
+            </td>
           </ng-container>
           <ng-container matColumnDef="isSubscribedTo">
-              <th mat-header-cell *matHeaderCellDef> Subscribed? </th>
-              <td mat-cell *matCellDef="let alarm" [formGroup]="alarm">
-                <mat-checkbox 
-                  aria-label="Subscribed?"
-                  formControlName="isSubscribedTo"
-                  [checked]="alarm.isSubscribedTo === true"
-                ></mat-checkbox>
-              </td>
+            <th mat-header-cell *matHeaderCellDef> Subscribed? </th>
+            <td mat-cell *matCellDef="let alarm" [formGroup]="alarm">
+              <mat-checkbox 
+                aria-label="Subscribed?"
+                formControlName="isSubscribedTo"
+                [checked]="alarm.isSubscribedTo === true"
+              ></mat-checkbox>
+            </td>
           </ng-container>
           <ng-container matColumnDef="checkFrequency">
-              <th mat-header-cell *matHeaderCellDef> Check frequency (in seconds)</th>
-              <td mat-cell *matCellDef="let alarm" [formGroup]="alarm">
-                <mat-form-field class="full-width">
-                  <input matInput formControlName="checkFrequency">
-                </mat-form-field>
-              </td>
+            <th mat-header-cell *matHeaderCellDef> Check frequency (in seconds)</th>
+            <td mat-cell *matCellDef="let alarm" [formGroup]="alarm">
+              <mat-form-field class="full-width">
+                <input matInput formControlName="checkFrequency">
+              </mat-form-field>
+            </td>
           </ng-container>
           <ng-container matColumnDef="actions">
-              <th mat-header-cell *matHeaderCellDef> Actions </th>
-              <td mat-cell *matCellDef="let alarm">
-                <button mat-button class="mat-raised-button mat-warn">Delete</button>
-              </td>
+            <th mat-header-cell *matHeaderCellDef> Actions </th>
+            <td mat-cell *matCellDef="let alarm; let index = index">
+              <button mat-button class="mat-raised-button mat-warn" (click)="deleteAlarm(alarm, index)">Delete</button>
+            </td>
           </ng-container>
         </table>
       </ng-container>
     </form>
-    <button mat-button class="mat-raised-button mat-primary" style=" margin: 20px 10px">Create New Alarm</button>
+    <button mat-button class="mat-raised-button mat-primary" style=" margin: 20px 10px" (click)="addAlarm()">Create New Alarm</button>
   </ng-container>
 
   <!-- Email -->

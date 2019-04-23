@@ -1,7 +1,8 @@
-import { Component, Inject } from '@angular/core';
-import { FormGroup, FormArray } from '@angular/forms';
+import { Component, Inject, ChangeDetectorRef } from '@angular/core';
+import { FormGroup, FormArray, Validators, FormBuilder, FormControl } from '@angular/forms';
 import { MatDialogRef } from '@angular/material/dialog';
 import { MAT_DIALOG_DATA } from '@angular/material';
+import { Alarm } from 'src/app/interfaces/settings-interfaces/alarm.interface';
 
 @Component({
   selector: 'app-dialog',
@@ -14,7 +15,7 @@ export class DialogComponent {
   public description: string;
   public form: FormGroup;
 
-  constructor(public dialogRef: MatDialogRef<DialogComponent>, @Inject(MAT_DIALOG_DATA) public data: any) { 
+  constructor(public dialogRef: MatDialogRef<DialogComponent>, @Inject(MAT_DIALOG_DATA) public data: any, private fb: FormBuilder, private changeDetectorRef: ChangeDetectorRef) { 
     this.type = data.type;
     this.title = data.title;
     this.description = data.description;
@@ -42,12 +43,31 @@ export class DialogComponent {
   }
 
   updateTable() {
-    //renderRows();
+    this.changeDetectorRef.detectChanges();
   }
 
-  addAlarm() {}
+  addAlarm() {
+    let subForm: FormGroup = this.fb.group({
+        variable: ["", [Validators.required]],
+        condition: ["", [Validators.required]],
+        value: ["", [Validators.required]],
+    });
 
-  deleteAlarm() {}
+    let alarmsForm: FormGroup = this.fb.group({
+      name: ["", [Validators.required]],
+      condition: subForm,
+      isSubscribedTo: ["", [Validators.required]],
+      checkFrequency: ["", [Validators.required]]
+    });
+
+    (<FormArray> this.form.controls.alarms).push(alarmsForm);
+  }
+
+  deleteAlarm(alarm: Alarm, index) {
+    console.log(alarm);
+    (<FormArray> this.form.controls.alarms).removeAt(index);
+    this.updateTable();
+  }
 
   //#endregion
 
